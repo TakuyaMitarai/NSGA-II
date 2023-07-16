@@ -344,8 +344,8 @@ void WholeIndividual::objective_evaluation()
 	fitness2 = gx * hx;
 	*/
 
+	/*
 	//ZDT6
-	//ZDT4
 	std::vector<int> binaryCode(20, 0);
     binaryCode[0] = chrom[0]; // 最上位ビットはそのままコピー
 
@@ -396,7 +396,59 @@ void WholeIndividual::objective_evaluation()
 	hx = 1 - pow(fitness1/gx, 2);
 
 	fitness2 = gx * hx;
+	*/
 
+	double realValue2;
+	std::vector<int> binaryCode(20, 0);
+		binaryCode[0] = chrom[0]; // 最上位ビットはそのままコピー
+
+		// グレイコードを2進数に変換
+		for (int j = 1; j < 20; j++) {
+			binaryCode[j] = binaryCode[j-1] ^ (int)chrom[j]; // i番目のビットは、i-1番目のビットとi番目のグレイコードをXORしたもの
+		}
+
+		// 2進数を10進数に変換
+		int decimalValue = 0;
+		for (int j = 0; j < 20; j++) {
+			decimalValue += binaryCode[j] * std::pow(2, 19 - j);
+		}
+
+		// バイナリの最大値と最小値を求める
+		int binaryMin = 0;
+		int binaryMax = std::pow(2, 20) - 1;
+
+		// バイナリを-kからkの実数にマッピングする
+		double realValue = -5 + (double)decimalValue * (2.0 * 5) / (double)(binaryMax - binaryMin);
+
+	for(i = 1; i <= 100; i++) {
+		if(i != 100) {
+			std::vector<int> binaryCode(20, 0);
+			binaryCode[0] = chrom[20 * i]; // 最上位ビットはそのままコピー
+
+			// グレイコードを2進数に変換
+			for (int j = 1; j < 20; j++) {
+				binaryCode[j] = binaryCode[j-1] ^ (int)chrom[20 * i + j]; // i番目のビットは、i-1番目のビットとi番目のグレイコードをXORしたもの
+			}
+
+			// 2進数を10進数に変換
+			int decimalValue = 0;
+			for (int j = 0; j < 20; j++) {
+				decimalValue += binaryCode[j] * std::pow(2, 19 - j);
+			}
+
+			// バイナリの最大値と最小値を求める
+			int binaryMin = 0;
+			int binaryMax = std::pow(2, 20) - 1;
+
+			// バイナリを-kからkの実数にマッピングする
+			realValue2 = -5 + (double)decimalValue * (2.0 * 5) / (double)(binaryMax - binaryMin);
+
+			fitness1 += -10 * exp(-0.2 * sqrt(realValue * realValue + realValue2 * realValue2));
+		}
+		fitness2 += pow(abs(realValue), 0.8) + 5 * sin(realValue * realValue * realValue);
+		
+		realValue = realValue2;
+	}
 	/*
 	//KUR
 	fitness1 = 0;
